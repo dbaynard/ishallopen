@@ -1,5 +1,5 @@
 flags: {}
-resolver: ghc-7.10
+resolver: lts-6.4
 packages:
 - '.'
 extra-deps: []
