@@ -1,5 +1,5 @@
 {-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE RankNTypes, TypeOperators, LambdaCase #-}
+{-# LANGUAGE RankNTypes, TypeOperators, LambdaCase, ScopedTypeVariables #-}
 {-# LANGUAGE DeriveFunctor #-}
 
 module Lens (
@@ -8,6 +8,7 @@ module Lens (
 
 import BasicPrelude
 import Data.Profunctor
+import Data.Profunctor.Unsafe
 import Data.Functor.Identity
 
 import Data.Coerce
@@ -17,15 +18,17 @@ import Control.Monad.State.Strict
 
 -- * Types
 
+type Overloaded p f s t a b = p a (f b) -> p s (f t)
+
 -- ** Base types
 
-type Lens s t a b = forall f . Functor f => (a -> f b) -> s -> f t
+type Lens s t a b = forall f . Functor f => Overloaded (->) f s t a b
 
-type Traversal s t a b = forall f . Applicative f => (a -> f b) -> s -> f t
+type Traversal s t a b = forall f . Applicative f => Overloaded (->) f s t a b
 
-type Prism s t a b = forall p f . (Choice p, Applicative f) => p a (f b) -> p s (f t)
+type Prism s t a b = forall p f . (Choice p, Applicative f) => Overloaded p f s t a b
 
-type Iso s t a b = forall p f . (Profunctor p, Functor f) => p a (f b) -> p s (f t)
+type Iso s t a b = forall p f . (Profunctor p, Functor f) => Overloaded p f s t a b
 
 -- ** Simplified types
 
@@ -36,9 +39,11 @@ type s :~: a = Iso s s a a
 
 -- ** Types for implementing generic lens functions
 
-type Getting r s a = (a -> Const r a) -> (s -> Const r s)
+type Getting r s a = Overloaded (->) (Const r) s s a a
 
-type Setting p s t a b = p a (Identity b) -> s -> Identity t
+type Setting p s t a b = Overloaded p Identity s t a b
+
+type Setter s t a b = Overloaded (->) Identity s t a b
 
 -- * Construct optics
 
@@ -70,13 +75,18 @@ instance Profunctor (Exchange a b) where
     {-# INLINE lmap #-}
     rmap g (Exchange sa bt) = Exchange sa (g . bt)
     {-# INLINE rmap #-}
+    (#.) _ = coerce (id :: t -> t) :: forall t u . Coercible t u => u -> t
+    {-# INLINE (#.) #-}
+    (.#) p _ = coerce p
+    {-# INLINE (.#) #-}
 
 --type AnIso s t a b = (a -> a, b -> Identity b) -> (s -> a, b -> Identity t)
-type AnIso s t a b = Exchange a b a (Identity b) -> Exchange a b s (Identity t)
+--type AnIso s t a b = Exchange a b a (Identity b) -> Exchange a b s (Identity t)
+type AnIso s t a b = Overloaded (Exchange a b) Identity s t a b
 
 withIso :: AnIso s t a b -> ((s -> a) -> (b -> t) -> r) -> r
 withIso ai k = case ai (Exchange id Identity) of
-    Exchange sa bt -> k sa (runIdentity . bt)
+    Exchange sa bt -> k sa (runIdentity #. bt)
 {-# INLINE withIso #-}
 
 from :: AnIso s t a b -> Iso b a t s
@@ -94,7 +104,7 @@ from i = withIso i $ flip iso
 
   'over' has not been implemented.
 -}
-(%~) :: Setting (->) s t a b -> (a -> b) -> s -> t
+(%~) :: Setter s t a b -> (a -> b) -> s -> t
 l %~ f = runIdentity . l (Identity . f)
 {-# INLINE (%~) #-}
 infixr 4 %~
@@ -110,7 +120,7 @@ infixr 4 %~
 
   'modifying' has not been implemented.
 -}
-(%=) :: MonadState s m => Setting (->) s s a b -> (a -> b) -> m ()
+(%=) :: MonadState s m => Setter s s a b -> (a -> b) -> m ()
 l %= f = modify $ l %~ f
 {-# INLINE (%=) #-}
 infixr 4 %=
@@ -129,12 +139,12 @@ infixr 4 %=
 
   'assign' has not been implemented.
 -}
-(.=) :: MonadState s m => Setting (->) s s a b -> b -> m ()
+(.=) :: MonadState s m => Setter s s a b -> b -> m ()
 l .= v = modify $ l %~ const v
 {-# INLINE (.=) #-}
 infix 4 .=
 
-(.$=) :: (MonadState s m, Functor f) => Setting (->) s s a b -> f b -> f (m ())
+(.$=) :: (MonadState s m, Functor f) => Setter s s a b -> f b -> f (m ())
 {-# INLINE (.$=) #-}
 l .$= v = fmap (l .=) v
 infixr 4 .$=
@@ -146,7 +156,7 @@ infixr 4 .$=
   > do
   >     lens <~ action
 -}
-(<~) :: MonadState s m => Setting (->) s s a b -> m b -> m ()
+(<~) :: MonadState s m => Setter s s a b -> m b -> m ()
 l <~ mb = mb >>= (l .=)
 {-# INLINE (<~) #-}
 infix 2 <~
@@ -179,27 +189,48 @@ view l s = s ^. l
 
   'set' has not been implemented.
 -}
-(.~) :: Setting (->) s t a b -> b -> s -> t
+(.~) :: Setter s t a b -> b -> s -> t
 {-# INLINE (.~) #-}
 l .~ v = l %~ const v
 infixr 4 .~
 
-(.$~) :: Functor f => Setting (->) s t a b -> f b -> f (s -> t)
+(.$~) :: Functor f => Setter s t a b -> f b -> f (s -> t)
 {-# INLINE (.$~) #-}
 l .$~ v = fmap (l .~) v
 infixr 4 .$~
 
 -- ** Prisms
 
+newtype Reviewed a b = Reviewed { runReviewed :: b }
+        deriving (Functor)
+
+instance Profunctor Reviewed where
+    dimap _ f (Reviewed c) = Reviewed (f c)
+    {-# INLINE dimap #-}
+    lmap _ (Reviewed c) = Reviewed c
+    {-# INLINE lmap #-}
+    rmap = fmap
+    {-# INLINE rmap #-}
+    (#.) _ = coerce (id :: t -> t) :: forall t u . Coercible t u => u -> t
+    {-# INLINE (#.) #-}
+    Reviewed b .# _ = Reviewed b
+    {-# INLINE (.#) #-}
+
+type AReview s t a b = Overloaded Reviewed Identity s t a b
+
 {-
  -preview :: s :~>: a -> s -> Maybe a
  -preview = undefined
  -}
 
-{-
- -review :: s :~>: a -> a -> s
- -review = coerce
- -}
+review :: AReview s t a b -> b -> t
+review p = runIdentity #. runReviewed #. p .# Reviewed .# Identity
+{-# INLINE review #-}
+
+(#) :: AReview s t a b -> b -> t
+(#) = review
+{-# INLINE (#) #-}
+infixr 8 #
 
 -- * Samples
 
