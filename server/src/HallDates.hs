@@ -8,9 +8,9 @@ module HallDates (
 
 
 import BasicPrelude
+import Lens
 
-import Data.Time
-import Data.Time.Calendar.WeekDate (toWeekDate)
+import Data.Thyme
 import Data.Functor.Identity
 
 class (Monad m) => MonadTime m where
@@ -20,7 +20,7 @@ instance MonadTime IO where
     getTime = getCurrentTime
 
 instance MonadTime Identity where
-    getTime = pure $ UTCTime (ModifiedJulianDay 57564) (secondsToDiffTime 82438)
+    getTime = pure $ read "2016-06-24 04:40:00 GMT"
 
 data Message = NoHallToday
              | BreakFastToday
@@ -45,11 +45,11 @@ interpret MaybeHall      = "Who knows. Better get on your bike."
 ishallopen :: MonadTime m => m [Message]
 ishallopen = do
         currentTime <- getTime
-        let today = utctDay currentTime
+        let today = currentTime ^. _utctDay 
         pure $ ishallopentoday today
 
 ishallopentoday :: Day -> [Message]
-ishallopentoday (subtract 57564 . toModifiedJulianDay -> day)
+ishallopentoday (subtract 57564 . view modifiedJulianDay -> day)
     | day >= 95 || day < 0  = [MaybeHall]
     | day < 48 || day >= 66 = 
         case day `mod` 7 of
