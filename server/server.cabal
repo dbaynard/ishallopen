@@ -16,8 +16,11 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Lib
+  other-modules:       Lens
   build-depends:       base >= 4.7 && < 5
                      , aeson
+                     , mtl
+                     , profunctors
                      , servant-server
                      , wai
                      , warp
