@@ -17,7 +17,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     Lib
                        HallDates
-  other-modules:       Lens
+                       Lens
   build-depends:       base >= 4.7 && < 5
                      , aeson
                      , basic-prelude
