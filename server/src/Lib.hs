@@ -1,9 +1,8 @@
 {-# LANGUAGE DataKinds       #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators   #-}
 {-# LANGUAGE OverloadedStrings #-}    
 {-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE TypeSynonymInstances #-}
 
 module Lib
     ( startApp
@@ -16,18 +15,16 @@ import Data.Aeson.TH
 import Network.Wai
 import Network.Wai.Handler.Warp
 import Servant
+import Servant.HTML.Lucid
+import Lucid
 
 import HallDates
 
-data User = User
-  { userId        :: Int
-  , userFirstName :: String
-  , userLastName  :: String
-  } deriving (Eq, Show)
+type API = Get '[HTML] Message
 
-$(deriveJSON defaultOptions ''User)
-
-type API = "users" :> Get '[JSON] [User]
+instance ToHtml Message where
+    toHtml = toHtml . interpret
+    toHtmlRaw = toHtml
 
 startApp :: IO ()
 startApp = run 8080 app
@@ -39,9 +36,4 @@ api :: Proxy API
 api = Proxy
 
 server :: Server API
-server = return users
-
-users :: [User]
-users = [ User 1 "Isaac" "Newton"
-        , User 2 "Albert" "Einstein"
-        ]
+server = lift ishallopen
