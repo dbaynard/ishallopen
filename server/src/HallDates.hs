@@ -52,11 +52,12 @@ ishallopen = do
 
 ishallopentoday :: Day -> Message
 ishallopentoday (subtract 57564 . view modifiedJulianDay -> day)
-    | day >= 95 || day < 0  = MaybeHall
-    | day < 48 || day >= 66 = 
+    | day == 17             = MCRDinnerToday
+    | day >= 96 || day < 0  = MaybeHall
+    | day < 48 || day >= 67 = 
         case day `mod` 7 of
             0 -> NoHallToday
             1 -> DinnerToday
             _ -> BandLToday
-    | day >= 48 && day < 67 = NoHallForAges
+    | day >= 48 && day < 68 = NoHallForAges
     | otherwise             = MaybeHall
