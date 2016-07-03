@@ -1,8 +1,8 @@
-name:                client
+name:                ishallopentoday-client
 version:             0.1.0.0
 synopsis:            Initial project template from stack
 description:         Please see README.md
-homepage:            https://github.com/dbaynard/client#readme
+homepage:            https://github.com/dbaynard/ishallopentoday#readme
 license:             BSD3
 license-file:        LICENSE
 author:              David Baynard
@@ -27,9 +27,9 @@ executable client-output
   ghc-options:         -Wall
   build-depends:       base
                      , ghcjs-base
-                     , client
+                     , ishallopentoday-client
   default-language:    Haskell2010
 
 source-repository head
   type:     git
-  location: https://github.com/dbaynard/client
+  location: https://github.com/dbaynard/ishallopentoday
