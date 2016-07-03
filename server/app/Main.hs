@@ -1,6 +1,6 @@
 module Main where
 
-import Lib
+import IsHallOpenToday
 
 main :: IO ()
 main = startApp

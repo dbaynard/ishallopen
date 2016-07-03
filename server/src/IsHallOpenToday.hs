@@ -4,7 +4,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
-module Lib
+module IsHallOpenToday
     ( startApp
     ) where
 
