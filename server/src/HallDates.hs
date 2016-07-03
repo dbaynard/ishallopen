@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}    
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module HallDates (
     module HallDates
@@ -9,6 +10,7 @@ module HallDates (
 
 import BasicPrelude
 import Lens
+import GHC.Generics
 
 import Data.Thyme
 import Data.Functor.Identity
@@ -31,7 +33,7 @@ data Message = NoHallToday
              | MCRDinnerToday
              | NoHallForAges
              | MaybeHall
-             deriving (Show, Eq, Ord, Read, Enum, Bounded)
+             deriving (Show, Eq, Ord, Read, Enum, Bounded, Generic)
 
 interpret :: Message -> Text
 interpret NoHallToday    = "Hall is closed today."

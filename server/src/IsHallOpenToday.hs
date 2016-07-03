@@ -20,11 +20,14 @@ import Lucid
 
 import HallDates
 
-type API = Get '[HTML] Message
+type API = Get '[JSON] Message
 
 instance ToHtml Message where
     toHtml = toHtml . interpret
     toHtmlRaw = toHtml
+
+instance FromJSON Message
+instance ToJSON Message
 
 startApp :: IO ()
 startApp = run 8080 app
