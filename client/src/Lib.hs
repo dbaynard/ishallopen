@@ -6,6 +6,8 @@ module Lib
 import Data.JSString ()
 import GHCJS.Types
 
+import Servant.Client
+
 foreign import javascript unsafe "window.alert($1)" js_alert :: JSString -> IO ()
 
 someFunc :: IO ()
