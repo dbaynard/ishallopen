@@ -19,12 +19,18 @@ import Servant.HTML.Lucid
 import Lucid
 
 import HallDates
+import Css
 
 type API = Get '[HTML] Message
 
 instance ToHtml Message where
-    toHtml = toHtml . interpret
-    toHtmlRaw = toHtml
+    toHtml msg = doctypehtml_ $ do
+        head_ $ do
+            title_ "Is Hall Open Today?"
+            style_ $ renderStrict css
+        body_ $
+            p_ . toHtmlRaw $ msg
+    toHtmlRaw = toHtml . interpret
 
 startApp :: IO ()
 startApp = run 8080 app

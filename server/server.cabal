@@ -18,14 +18,17 @@ library
   exposed-modules:     Lib
                        HallDates
                        Lens
+                       Css
   build-depends:       base >= 4.7 && < 5
                      , aeson
                      , basic-prelude
+                     , clay
                      , lucid
                      , mtl
                      , profunctors
                      , servant-server
                      , servant-lucid
+                     , string-conv
                      , thyme
                      , wai
                      , warp
