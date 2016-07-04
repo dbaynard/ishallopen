@@ -1,5 +1,0 @@
-flags: {}
-resolver: ghcjs-0.3
-packages:
-- '.'
-extra-deps: []
