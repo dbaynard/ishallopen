@@ -1,8 +1,4 @@
-var then = moment("2016-06-25");
-var now = moment();
-var today = now.diff(then, 'days');
-
-function getMessage(day) {
+function writeMessage(day) {
     if (day === 17) {
         return 'There’s an MCR dinner tonight!'
     } else if (day >= 96 || day < 0) {
@@ -29,4 +25,13 @@ $.ajax({
     url: "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js",
     dataType: "script",
     cache: true
-}).done($("#message").html(getMessage(today)));
+}).done(function () {
+        function getToday() {
+            var then = moment("2016-06-25");
+            var now = moment();
+            var today = now.diff(then, 'days');
+            return writeMessage(today);
+        };
+        $("#message").html(getToday);
+    }
+);
