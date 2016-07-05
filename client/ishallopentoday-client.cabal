@@ -17,9 +17,14 @@ library
   hs-source-dirs:      src
   ghc-options:         -Wall
   exposed-modules:     Lib
+  other-modules:       Css
   build-depends:       base >= 4.7 && < 5
+                     , aeson
+                     , basic-prelude
+                     , clay
                      , ghcjs-base
                      , react-flux
+                     , string-conv
   default-language:    Haskell2010
 
 executable client-output
