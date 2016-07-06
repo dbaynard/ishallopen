@@ -16,11 +16,12 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   ghc-options:         -Wall
-  exposed-modules:     Lib
-                       Css
-                       HallDates
-                       Lens
+  exposed-modules:     IsHallOpenToday.Common
+                       IsHallOpenToday.Css
+                       IsHallOpenToday.HallDates
+                       IsHallOpenToday.Lens
   build-depends:       base >= 4.7 && < 5
+                     , aeson
                      , basic-prelude
                      , clay
                      , mtl

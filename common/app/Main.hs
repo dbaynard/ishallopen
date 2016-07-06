@@ -1,6 +1,6 @@
 module Main where
 
-import Lib
+import IsHallOpenToday.Common
 
 main :: IO ()
 main = someFunc
