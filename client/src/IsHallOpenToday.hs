@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module IsHallOpenToday (
-    main
+    react
 )   where
 
 {-import Data.JSString ()-}
@@ -13,5 +13,5 @@ import IsHallOpenToday.View
 
 {-foreign import javascript unsafe "window.alert($1)" js_alert :: JSString -> IO ()-}
 
-main :: IO ()
-main = reactRender "ishallopenApp" ishallopenApp ()
+react :: String -> IO ()
+react text = reactRender text ishallopenApp ()
