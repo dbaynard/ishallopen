@@ -17,7 +17,16 @@ library
   hs-source-dirs:      src
   ghc-options:         -Wall
   exposed-modules:     Lib
+                       Css
+                       HallDates
+                       Lens
   build-depends:       base >= 4.7 && < 5
+                     , basic-prelude
+                     , clay
+                     , mtl
+                     , profunctors
+                     , string-conv
+                     , thyme
   default-language:    Haskell2010
 
 executable common-exe
@@ -33,7 +42,11 @@ test-suite common-test
   hs-source-dirs:      test
   main-is:             Spec.hs
   build-depends:       base
+                     , hspec
                      , ishallopentoday-common
+                     , old-locale
+                     , QuickCheck
+                     , thyme
   ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 

@@ -7,7 +7,6 @@ module HallDates (
     module HallDates
 )   where
 
-
 import BasicPrelude
 import Lens
 import GHC.Generics
