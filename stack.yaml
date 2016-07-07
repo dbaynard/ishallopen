@@ -3,5 +3,6 @@ packages:
 - 'client'
 - 'server'
 - 'common'
+- 'js'
 extra-deps:
 - react-flux-1.1.1
