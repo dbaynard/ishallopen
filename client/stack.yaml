@@ -7,5 +7,10 @@ setup-info:
       ghcjs-0.2.0.20160628_ghc-7.10.3:
         url: https://s3.amazonaws.com/ghcjs/ghcjs-0.2.0.20160628_ghc-7.10.3.tar.gz
         sha1: 64c12de17f1961ae27135a7b69190a32c866776c
+packages:
+- location:
+	hg: https://bitbucket.org/wuzzeb/react-flux-servant
+    commit: 3d04d877f7c993afe9b7bb828eea345cd5c55d23
+  extra-dep: true
 extra-deps:
 - react-flux-1.1.1
