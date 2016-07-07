@@ -1,7 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Css (
+module IsHallOpenToday.Css (
     css
   , renderStrict
 )   where
