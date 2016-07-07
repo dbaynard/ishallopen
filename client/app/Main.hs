@@ -1,6 +1,10 @@
-module Main where
+{-# LANGUAGE OverloadedStrings #-}
 
-import Lib
+module Main (
+    main
+)   where
+
+import IsHallOpenToday
 
 main :: IO ()
-main = someFunc
+main = react "ishallopenApp"

@@ -19,11 +19,13 @@ library
   exposed-modules:     IsHallOpenToday.Common
                        IsHallOpenToday.Css
                        IsHallOpenToday.HallDates
+                       IsHallOpenToday.Html
                        IsHallOpenToday.Lens
   build-depends:       base >= 4.7 && < 5
                      , aeson
                      , basic-prelude
                      , clay
+                     , lucid
                      , mtl
                      , profunctors
                      , string-conv
