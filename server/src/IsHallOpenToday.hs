@@ -6,6 +6,7 @@
 
 module IsHallOpenToday
     ( startApp
+    , API
     ) where
 
 import BasicPrelude

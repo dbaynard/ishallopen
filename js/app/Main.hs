@@ -1,6 +1,6 @@
 module Main where
 
-import Lib
+import IsHallOpenToday.JS
 
 main :: IO ()
-main = startApp
+main = writeJsCode
