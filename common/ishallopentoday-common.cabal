@@ -1,4 +1,4 @@
-name:                ishallopentoday-server
+name:                ishallopentoday-common
 version:             0.1.0.0
 synopsis:            Initial project template from stack
 description:         Please see README.md
@@ -15,34 +15,40 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     IsHallOpenToday
+  ghc-options:         -Wall
+  exposed-modules:     IsHallOpenToday.Common
+                       IsHallOpenToday.Css
+                       IsHallOpenToday.HallDates
+                       IsHallOpenToday.Lens
   build-depends:       base >= 4.7 && < 5
                      , aeson
                      , basic-prelude
-                     , ishallopentoday-common
-                     , lucid
-                     , servant-server
-                     , servant-lucid
-                     , wai
-                     , warp
+                     , clay
+                     , mtl
+                     , profunctors
+                     , string-conv
+                     , thyme
   default-language:    Haskell2010
 
-executable server-exe
+executable common-exe
   hs-source-dirs:      app
   main-is:             Main.hs
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
-                     , ishallopentoday-server
+                     , ishallopentoday-common
   default-language:    Haskell2010
 
-test-suite server-test
+test-suite common-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
   build-depends:       base
                      , hspec
-                     , ishallopentoday-server
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+                     , ishallopentoday-common
+                     , old-locale
+                     , QuickCheck
+                     , thyme
+  ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 
 source-repository head

@@ -1,15 +1,17 @@
 {-# LANGUAGE OverloadedStrings #-}    
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE DeriveGeneric #-}
 
-module HallDates (
-    module HallDates
+module IsHallOpenToday.HallDates (
+    module IsHallOpenToday.HallDates
 )   where
 
-
 import BasicPrelude
-import Lens
+import IsHallOpenToday.Lens
+import GHC.Generics
 
+import Data.Aeson
 import Data.Thyme
 import Data.Functor.Identity
 
@@ -31,7 +33,10 @@ data Message = NoHallToday
              | MCRDinnerToday
              | NoHallForAges
              | MaybeHall
-             deriving (Show, Eq, Ord, Read, Enum, Bounded)
+             deriving (Show, Eq, Ord, Read, Enum, Bounded, Generic)
+
+instance FromJSON Message
+instance ToJSON Message
 
 interpret :: Message -> Text
 interpret NoHallToday    = "Hall is closed today."

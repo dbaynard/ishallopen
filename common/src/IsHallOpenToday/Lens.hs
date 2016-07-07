@@ -2,8 +2,8 @@
 {-# LANGUAGE RankNTypes, TypeOperators, LambdaCase, ScopedTypeVariables #-}
 {-# LANGUAGE DeriveFunctor #-}
 
-module Lens (
-    module Lens
+module IsHallOpenToday.Lens (
+    module IsHallOpenToday.Lens
 )   where
 
 import BasicPrelude

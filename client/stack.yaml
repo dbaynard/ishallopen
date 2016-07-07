@@ -7,3 +7,5 @@ setup-info:
       ghcjs-0.2.0.20160628_ghc-7.10.3:
         url: https://s3.amazonaws.com/ghcjs/ghcjs-0.2.0.20160628_ghc-7.10.3.tar.gz
         sha1: 64c12de17f1961ae27135a7b69190a32c866776c
+extra-deps:
+- react-flux-1.1.1

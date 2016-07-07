@@ -20,8 +20,8 @@ import Data.Thyme
 import Data.Thyme.Calendar.WeekDate
 import System.Locale
 
-import HallDates
-import Lens
+import IsHallOpenToday.HallDates
+import IsHallOpenToday.Lens
 
 main :: IO ()
 main = hspec spec

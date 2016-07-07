@@ -18,9 +18,9 @@ import Servant
 import Servant.HTML.Lucid
 import Lucid
 
-import HallDates
+import IsHallOpenToday.Common
 
-type API = Get '[HTML] Message
+type API = Get '[JSON] Message
 
 instance ToHtml Message where
     toHtml = toHtml . interpret

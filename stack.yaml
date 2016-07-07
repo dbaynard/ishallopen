@@ -1,0 +1,7 @@
+resolver: lts-6.4
+packages:
+- 'client'
+- 'server'
+- 'common'
+extra-deps:
+- react-flux-1.1.1
