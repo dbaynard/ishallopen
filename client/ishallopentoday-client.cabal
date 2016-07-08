@@ -29,7 +29,7 @@ library
                      , react-flux
   default-language:    Haskell2010
 
-executable client-output
+executable ishallopentoday-client
   hs-source-dirs:      app
   main-is:             Main.hs
   ghc-options:         -Wall
