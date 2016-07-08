@@ -22,5 +22,5 @@ css = -- do
             -- textAlign center
             p ? do
                 fontFamily ["Helvetica Neue", "Helvetica", "Arial"] [sansSerif]
-                "message" & do
+                ".message" & do
                     fontSize $ pt 32
