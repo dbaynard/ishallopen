@@ -1,4 +1,4 @@
-name:                ishallopentoday-common
+name:                ishallopentoday-html
 version:             0.1.0.0
 synopsis:            Initial project template from stack
 description:         Please see README.md
@@ -16,35 +16,30 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   ghc-options:         -Wall
-  exposed-modules:     IsHallOpenToday.Common
-                       IsHallOpenToday.HallDates
-                       IsHallOpenToday.Lens
+  exposed-modules:     IsHallOpenToday.Css
+                       IsHallOpenToday.Html
   build-depends:       base >= 4.7 && < 5
-                     , aeson
                      , basic-prelude
-                     , mtl
-                     , profunctors
-                     , thyme
+                     , clay
+                     , ishallopentoday-common
+                     , lucid
+                     , string-conv
   default-language:    Haskell2010
 
-executable ishallopentoday-common
+executable ishallopentoday-html
   hs-source-dirs:      app
   main-is:             Main.hs
   ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
-                     , ishallopentoday-common
+                     , ishallopentoday-html
   default-language:    Haskell2010
 
-test-suite common-test
+test-suite html-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
   build-depends:       base
-                     , hspec
-                     , ishallopentoday-common
-                     , old-locale
-                     , QuickCheck
-                     , thyme
+                     , ishallopentoday-html
   ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 
