@@ -1,6 +1,8 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Main where
 
-import Lib
+import IsHallOpenToday.Html
 
 main :: IO ()
-main = someFunc
+main = renderIndex "ishallopenApp"
