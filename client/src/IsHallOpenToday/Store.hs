@@ -14,4 +14,4 @@ instance StoreData Message where
     transform () _ = ishallopen
 
 messageStore :: ReactStore Message
-messageStore = mkStore MaybeHall
+messageStore = mkStore Checking

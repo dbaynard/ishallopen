@@ -25,6 +25,6 @@ html identifier = doctypehtml_ $ do
             section_ [ id_ identifier ] . pure $ ()
             script_ [ src_ "https://cdnjs.cloudflare.com/ajax/libs/react/15.2.0/react.min.js" ] mempty
             script_ [ src_ "https://cdnjs.cloudflare.com/ajax/libs/react/15.2.0/react-dom.min.js" ] mempty
-            script_ [ src_ "client.js" ] mempty
+            script_ [ src_ "ishallopentoday.js" ] mempty
     where mempty = "" :: ByteString
 

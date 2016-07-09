@@ -2,7 +2,7 @@
 
 module Main where
 
-import IsHallOpenToday.Common
+import IsHallOpenToday.Html
 
 main :: IO ()
-main = hallQ
+main = renderIndex "ishallopenApp"

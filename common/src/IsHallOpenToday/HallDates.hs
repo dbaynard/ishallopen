@@ -24,7 +24,8 @@ instance MonadTime IO where
 instance MonadTime Identity where
     getTime = pure $ read "2016-06-24 04:40:00 GMT"
 
-data Message = NoHallToday
+data Message = Checking
+             | NoHallToday
              | BreakFastToday
              | LunchToday
              | BandLToday
@@ -39,6 +40,7 @@ instance FromJSON Message
 instance ToJSON Message
 
 interpret :: Message -> Text
+interpret Checking       = "Checking…"
 interpret NoHallToday    = "Hall is closed today."
 interpret BreakFastToday = "Hall is serving breakfast today."
 interpret LunchToday     = "Hall is serving lunch today."
