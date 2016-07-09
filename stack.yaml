@@ -4,5 +4,6 @@ packages:
 - 'server'
 - 'common'
 - 'html'
+- 'deploy'
 extra-deps:
 - react-flux-1.1.1
