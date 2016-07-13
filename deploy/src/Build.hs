@@ -125,7 +125,7 @@ localInstallRoot :: Action FilePath
 localInstallRoot = trim . fromStdout <$> command [] "stack" ["path", "--local-install-root"]
 
 shakeDir, distDir, buildDir, outputName, outputJS, outputMinJS, cstackyaml, index, ishallopentodayHtml :: FilePath
-shakeDir = "_build"
+shakeDir = ".build"
 buildDir = "dist-js"
 distDir = "dist"
 outputName = "client"
