@@ -14,6 +14,8 @@ import qualified Data.ByteString as B
 import Text.ParserCombinators.ReadP
 import Data.List.Extra (trim)
 
+import System.Console.GetOpt
+
 import Development.Shake
 -- import Development.Shake.Command
 import Development.Shake.FilePath
@@ -29,8 +31,14 @@ newtype GhcjsVersion = GhcjsVersion ()
 newtype GhcjsFolder = GhcjsFolder ()
         deriving (Show, Eq, Hashable, Binary, NFData, Typeable)
 
+data Flag = Develop
+    deriving (Eq)
+
+cmdFlags :: [OptDescr (Either String Flag)]
+cmdFlags = [Option "d" ["develop"] (NoArg . Right $ Develop) "Develop mode — do not compile javascript"]
+
 build :: IO ()
-build = shakeArgs shakeOptions{shakeFiles="_build"} $ do
+build = shakeArgsWith shakeOptions{shakeFiles=shakeDir} cmdFlags $ \flags _ -> pure . pure $ do
     want [ ishallopentodayHtml 
          , distDir </> "ishallopentoday" <.> "js"
          , distDir </> "index" <.> "html"
@@ -40,32 +48,38 @@ build = shakeArgs shakeOptions{shakeFiles="_build"} $ do
     void $ addOracle getGhcjsVersion
     void $ addOracle getGhcjsFolder
     ishallopentodayHtml %> getGen
-    distDir </> "ishallopentoday" <.> "js" %> getJS
+    outputJS %> genJS
+    distDir </> "ishallopentoday" <.> "js" %> if Develop `elem` flags then getJS else getMinJS
     distDir </> "index" <.> "html" %> getHtml
 
 clean :: Action ()
 clean = do
-        removeFilesAfter "_build" ["//*"]
+        removeFilesAfter shakeDir ["//*"]
         removeFilesAfter buildDir ["//*"]
         removeFilesAfter "." [ishallopentodayHtml]
 
-getJS :: FilePath -> Action ()
-getJS out = do
+genJS :: FilePath -> Action ()
+genJS out = do
         ghcjs <- askOracle (GhcjsVersion ())
         command_ [] "stack" ["build", "--compiler", ghcjs, "ishallopentoday-client"]
         lir <- localInstallRoot
         ghcjsFolder <- askOracle (GhcjsFolder ())
         let clientjs = lir </> ghcjsFolder </> "bin" </> "ishallopentoday-client.jsexe" </> "all.js"
+        putNormal "clientjs"
         need [clientjs]
         liftIO $ do
             alljs <- B.readFile clientjs
             B.writeFile out $ "(function(global,React,ReactDOM) {" <> alljs <> "})(window, window['React'], window['ReactDOM']);"
-        command_ [] "sed" ["-i", "s/goog.provide.*//", clientjs]
-        command_ [] "sed" ["-i", "s/goog.require.*//", clientjs]
+        command_ [] "sed" ["-i", "s/goog.provide.*//", out]
+        command_ [] "sed" ["-i", "s/goog.require.*//", out]
+
+getJS :: FilePath -> Action ()
+getJS out = do
+        need [outputJS]
+        outputJS `copyFileChanged` out
 
 getMinJS :: FilePath -> Action ()
 getMinJS out = do
-        getJS out
         need [outputJS]
         Stdout minOut <- command [] "closure" ["--compilation_level=ADVANCED_OPTIMIZATIONS", outputJS] :: Action (Stdout ByteString)
         liftIO . B.writeFile outputMinJS $ minOut
@@ -77,7 +91,7 @@ getHtml out = do
         need [ishallopentodayHtml]
         command_ [] "./ishallopentoday-html" []
         need [index]
-        index `copyFile'` out
+        index `copyFileChanged` out
         removeFilesAfter index []
 
 getGen :: String -> Action ()
@@ -110,7 +124,8 @@ getGhcjsFolder (GhcjsFolder _) = do
 localInstallRoot :: Action FilePath
 localInstallRoot = trim . fromStdout <$> command [] "stack" ["path", "--local-install-root"]
 
-distDir, buildDir, outputName, outputJS, outputMinJS, cstackyaml, index, ishallopentodayHtml :: FilePath
+shakeDir, distDir, buildDir, outputName, outputJS, outputMinJS, cstackyaml, index, ishallopentodayHtml :: FilePath
+shakeDir = "_build"
 buildDir = "dist-js"
 distDir = "dist"
 outputName = "client"
