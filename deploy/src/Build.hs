@@ -35,28 +35,30 @@ data Flag = Develop
     deriving (Eq)
 
 cmdFlags :: [OptDescr (Either String Flag)]
-cmdFlags = [Option "d" ["develop"] (NoArg . Right $ Develop) "Develop mode — do not compile javascript"]
+cmdFlags = [Option "D" ["develop"] (NoArg . Right $ Develop) "Develop mode — do not compile javascript"]
 
 build :: IO ()
-build = shakeArgsWith shakeOptions{shakeFiles=shakeDir} cmdFlags $ \flags _ -> pure . pure $ do
-    want [ ishallopentodayHtml 
-         , distDir </> "ishallopentoday" <.> "js"
-         , distDir </> "index" <.> "html"
-         ]
-    phony "clean" clean
+build = shakeArgsWith shakeOptions{shakeFiles=shakeDir} cmdFlags $ \flags targets -> pure . pure $ do
+    want $ [ ishallopentodayHtml 
+           , distDir </> "ishallopentoday" <.> "js"
+           , distDir </> "index" <.> "html"
+           ] <> targets
     void $ addOracle getGhcVersion
     void $ addOracle getGhcjsVersion
     void $ addOracle getGhcjsFolder
+    "clean" ~> clean
     ishallopentodayHtml %> getGen
     outputJS %> genJS
     distDir </> "ishallopentoday" <.> "js" %> if Develop `elem` flags then getJS else getMinJS
+    "index" <.> "html" %> genHtml
     distDir </> "index" <.> "html" %> getHtml
 
 clean :: Action ()
 clean = do
-        removeFilesAfter shakeDir ["//*"]
+        putNormal $ "Removing files in " <> ", " `intercalate` [shakeDir, buildDir] <> "and removing " <> ishallopentodayHtml
         removeFilesAfter buildDir ["//*"]
-        removeFilesAfter "." [ishallopentodayHtml]
+        removeFilesAfter "." [ishallopentodayHtml, "index.html"]
+        removeFilesAfter shakeDir ["//*"]
 
 genJS :: FilePath -> Action ()
 genJS out = do
@@ -86,10 +88,13 @@ getMinJS out = do
         need [outputMinJS]
         outputMinJS `copyFileChanged` out
 
-getHtml :: String -> Action ()
-getHtml out = do
+genHtml :: String -> Action ()
+genHtml _ = do
         need [ishallopentodayHtml]
         command_ [] "./ishallopentoday-html" []
+
+getHtml :: String -> Action ()
+getHtml out = do
         need [index]
         index `copyFileChanged` out
         removeFilesAfter index []
@@ -125,7 +130,7 @@ localInstallRoot :: Action FilePath
 localInstallRoot = trim . fromStdout <$> command [] "stack" ["path", "--local-install-root"]
 
 shakeDir, distDir, buildDir, outputName, outputJS, outputMinJS, cstackyaml, index, ishallopentodayHtml :: FilePath
-shakeDir = ".build"
+shakeDir = "_build"
 buildDir = "dist-js"
 distDir = "dist"
 outputName = "client"
