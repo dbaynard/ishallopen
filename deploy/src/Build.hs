@@ -112,7 +112,7 @@ clean = do
 -}
 genJS :: FilePath -> Action ()
 genJS out = do
-        need =<< getDirectoryFiles "" [outputName <//> "*.hs", outputName <//> "*.cabal"]
+        need =<< getDirectoryFiles "" [outputName <//> "*.hs", outputName <//> "*.cabal", "common" <//> "*.hs", "common" <//> "*.cabal"]
         ghcjs <- askOracle (GhcjsVersion ())
         command_ [] "stack" ["build", "--compiler", ghcjs, "ishallopentoday-client"]
         lir <- localInstallRoot
