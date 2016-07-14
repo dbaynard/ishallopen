@@ -27,22 +27,19 @@ css = -- do
             (p <> a) # ".refresh" ? do
                 margin nil auto nil auto
                 fontSize $ pt 10
-                width (em 6)
+                minWidth (em 6)
                 padding (ex 1) (em 1) (ex 1) (em 1)
                 textDecoration none
+            a # ".refresh" ? do
                 link &
                     color steelblue
-                hover & do
-                    transition "backgroundColor" (sec 1.5) ease (sec 0)
-                    color azure
-                    backgroundColor steelblue
-                active & do
-                    transition "backgroundColor" (sec 1.5) ease (sec 0)
-                    color azure
-                    backgroundColor steelblue
+                hover & linkprops
+                active & linkprops
                 visited & do
                     color steelblue
-                    hover & do
-                        transition "backgroundColor" (sec 1.5) ease (sec 0)
-                        color azure
-                        backgroundColor steelblue
+                    hover & linkprops
+    where
+        linkprops = do
+            transition "backgroundColor" (sec 1.5) ease (sec 0)
+            color azure
+            backgroundColor steelblue

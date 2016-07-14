@@ -19,7 +19,12 @@ ishallopenApp = defineControllerView "Is hall open today?" messageStore $ \(Stor
     div_ $ do
         p_ [ classNames [("message",True)]] . elemText . interpret $ msg
         p_ [ classNames [("date",True)]] . elemJSString $ date
+        view todayDate () empty
         p_ [
              classNames [("refresh",True)]
            , onClick $ \_ _ -> dispatch
            ] "Refresh"
+
+todayDate :: ReactView ()
+todayDate = defineControllerView "Today’s date" dayStore $ \day () ->
+    p_ [ classNames [("date",True)]] . elemText . displayDay $ day

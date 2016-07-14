@@ -30,5 +30,12 @@ instance StoreData Store where
     type StoreAction Store = ()
     transform () _ = curry Store <$> ishallopen <*> js_todayDate
 
-messageStore :: ReactStore Store
-messageStore = mkStore . Store $ (Checking, "…")
+instance StoreData Day where
+    type StoreAction Day = ()
+    transform () _ = getToday
+
+messageStore :: ReactStore Message
+messageStore = mkStore Checking
+
+dayStore :: ReactStore Day
+dayStore = mkStore $ runIdentity getToday

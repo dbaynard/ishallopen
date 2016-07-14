@@ -15,5 +15,5 @@ import IsHallOpenToday.Dispatcher
 {-foreign import javascript unsafe "window.alert($1)" js_alert :: JSString -> IO ()-}
 
 react :: String -> IO ()
-react text = reactRender text ishallopenApp () <* executeAction dispatchMessage
+react text = reactRender text ishallopenApp () <* void (traverse executeAction dispatch)
 

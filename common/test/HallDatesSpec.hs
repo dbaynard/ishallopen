@@ -18,7 +18,6 @@ import Data.Maybe (fromMaybe)
 
 import Data.Thyme
 import Data.Thyme.Calendar.WeekDate
-import System.Locale
 
 import IsHallOpenToday.HallDates
 import IsHallOpenToday.Lens
@@ -78,6 +77,3 @@ mzip = curry $ runKleisli (Kleisli id *** Kleisli id)
 funzip :: Functor f => f (a, b) -> (f a, f b)
 funzip = fmap fst &&& fmap snd
 {-# INLINE funzip #-}
-
-ukTimeLocale :: TimeLocale
-ukTimeLocale = defaultTimeLocale { dateFmt = "%d/%m/%Y" }

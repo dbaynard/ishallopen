@@ -6,6 +6,8 @@
 module IsHallOpenToday.HallDates (
     module IsHallOpenToday.HallDates
   , Day
+  , Day
+  , runIdentity
 )   where
 
 import BasicPrelude
@@ -14,6 +16,8 @@ import GHC.Generics
 
 import Data.Aeson
 import Data.Thyme
+import System.Locale
+import Data.String.Conv
 import Data.Functor.Identity
 
 class (Monad m) => MonadTime m where
@@ -55,8 +59,14 @@ interpret MCRDinnerToday = "Hall is serving breakfast and lunch today. And there
 interpret NoHallForAges  = "Hall is closed until August 31st."
 interpret MaybeHall      = "Who knows. Better get on your bike."
 
+displayDay :: Day -> Text
+displayDay = toS . formatTime ukTimeLocale "%A %e %B %Y"
+
 ishallopen :: MonadTime m => m Message
 ishallopen = ishallopentoday <$> getToday
+
+getToday :: MonadTime m => m Day
+getToday = view _utctDay <$> getTime
 
 getToday :: MonadTime m => m Day
 getToday = view _utctDay <$> getTime
@@ -72,3 +82,6 @@ ishallopentoday (subtract 57564 . view modifiedJulianDay -> day)
             _ -> BandLToday
     | day >= 48 && day < 68 = NoHallForAges
     | otherwise             = MaybeHall
+
+ukTimeLocale :: TimeLocale
+ukTimeLocale = defaultTimeLocale { dateFmt = "%d/%m/%Y" }

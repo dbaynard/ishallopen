@@ -23,7 +23,9 @@ library
                      , aeson
                      , basic-prelude
                      , mtl
+                     , old-locale
                      , profunctors
+                     , string-conv
                      , thyme
   default-language:    Haskell2010
 
@@ -42,7 +44,6 @@ test-suite common-test
   build-depends:       base
                      , hspec
                      , ishallopentoday-common
-                     , old-locale
                      , QuickCheck
                      , thyme
   ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
