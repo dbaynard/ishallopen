@@ -30,5 +30,7 @@ html identifier = doctypehtml_ $ do
             script_ [ src_ "ishallopentoday.js" ] mempty
             noscript_ $
                 p_ [ class_ "message" ] "This site requires javascript. It does some calculations to work out whether hall is open, and that needs javascript."
+            p_ $
+                a_ [  class_ "refresh", href_ "//github.com/dbaynard/ishallopen/issues" ] "Issue tracker"
     where mempty = "" :: ByteString
 
