@@ -8,16 +8,18 @@ module IsHallOpenToday.View (
 import BasicPrelude
 
 import React.Flux
-import Data.JSString ()
+import Data.JSString
 
 import IsHallOpenToday.Store
 import IsHallOpenToday.Dispatcher
 import IsHallOpenToday.Common
 
-ishallopenApp :: ReactView ()
-ishallopenApp = defineControllerView "Is hall open today?" messageStore $ \msg () ->
+ishallopenApp :: JSString -- ^ The date
+              -> ReactView ()
+ishallopenApp dateString = defineControllerView "Is hall open today?" messageStore $ \msg () ->
     div_ $ do
         p_ [ classNames [("message",True)]] . elemText . interpret $ msg
+        p_ [ classNames [("date",True)]] . elemJSString $ dateString
         p_ [
              classNames [("refresh",True)]
            , onClick $ \_ _ -> dispatch
