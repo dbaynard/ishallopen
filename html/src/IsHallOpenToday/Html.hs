@@ -12,8 +12,10 @@ import Lucid
 
 import IsHallOpenToday.Css
 
-renderIndex :: Text -> IO ()
-renderIndex = renderToFile "index.html" . html
+import Data.String.Conv
+
+renderIndex :: Text -> ByteString
+renderIndex = toS . renderBS . html
 
 html :: Monad m => Text -> HtmlT m ()
 html identifier = doctypehtml_ $ do

@@ -1,3 +1,7 @@
+deploy-app
+ishallopentoday-html
+ishallopentoday-common
+.build/
 dist
 dist-*
 cabal-dev
