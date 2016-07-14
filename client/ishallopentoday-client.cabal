@@ -21,11 +21,9 @@ library
                        IsHallOpenToday.Store
                        IsHallOpenToday.View
   build-depends:       base >= 4.7 && < 5
-                     , aeson
                      , basic-prelude
                      , ghcjs-base
                      , ishallopentoday-common
-                     , lucid
                      , react-flux
   default-language:    Haskell2010
 

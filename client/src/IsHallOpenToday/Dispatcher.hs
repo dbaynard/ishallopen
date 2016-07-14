@@ -9,10 +9,7 @@ import React.Flux
 import IsHallOpenToday.Store
 
 dispatch :: ViewEventHandler
-dispatch = [dispatchMessage, dispatchDay]
-
-dispatchMessage :: SomeStoreAction
-dispatchMessage = SomeStoreAction messageStore ()
+dispatch = [dispatchDay]
 
 dispatchDay :: SomeStoreAction
 dispatchDay = SomeStoreAction dayStore ()

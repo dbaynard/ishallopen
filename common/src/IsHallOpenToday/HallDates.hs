@@ -17,7 +17,6 @@ import GHC.Generics
 import Data.Aeson
 import Data.Thyme
 import System.Locale
-import Data.String.Conv
 import Data.Functor.Identity
 
 class (Monad m) => MonadTime m where
@@ -59,8 +58,8 @@ interpret MCRDinnerToday = "Hall is serving breakfast and lunch today. And there
 interpret NoHallForAges  = "Hall is closed until August 31st."
 interpret MaybeHall      = "Who knows. Better get on your bike."
 
-displayDay :: Day -> Text
-displayDay = toS . formatTime ukTimeLocale "%A %e %B %Y"
+displayDay :: Day -> String
+displayDay = formatTime ukTimeLocale "%A %e %B %Y"
 
 ishallopen :: MonadTime m => m Message
 ishallopen = ishallopentoday <$> getToday
