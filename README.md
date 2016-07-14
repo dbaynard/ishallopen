@@ -11,4 +11,6 @@ Install [stack](https://haskellstack.org), clone this repo then from the main fo
 
 The following command builds the relevant libraries and executables, and dumps the resulting website into the `dist` directory.
 
-    ./build.sh
+    ./build.sh -P
+
+`-P` switches on the production mode options

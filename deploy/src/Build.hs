@@ -43,14 +43,16 @@ newtype GhcjsVersion = GhcjsVersion ()
 newtype GhcjsFolder = GhcjsFolder ()
         deriving (Show, Eq, Hashable, Binary, NFData, Typeable)
 
-data Flag = Development
+data Flag = Production
     deriving (Eq, Ord, Show, Read, Enum, Bounded)
 
 {-|
   Flags to be passed to the 'build' function.
+
+  The default mode is development mode, in which javascript is not minified.
 -}
 cmdFlags :: [OptDescr (Either String Flag)]
-cmdFlags = [Option "D" ["development"] (NoArg . Right $ Development) "Development mode — do not compile javascript"]
+cmdFlags = [Option "P" ["production"] (NoArg . Right $ Production) "Production mode — do compile javascript"]
 
 {-|
   This is where the magic happens.
@@ -72,7 +74,7 @@ build = shakeArgsWith shakeOptions{shakeFiles=shakeDir} cmdFlags $ \flags target
            ] <> targets -- Adds `clean` target
     -- | Only want outputMinJS if not in development mode.
     action $
-        when (Development `notElem` flags) $ need [outputMinJS]
+        when (Production `elem` flags) $ need [outputMinJS]
     -- | Get information about compilers, therefore about stack directory
     -- structure
     addOracle' getGhcVersion
@@ -84,7 +86,7 @@ build = shakeArgsWith shakeOptions{shakeFiles=shakeDir} cmdFlags $ \flags target
     ishallopentodayHtml %> getGen
     outputJS %> genJS
     outputMinJS %> genMinJS
-    distDir </> "ishallopentoday" <.> "js" %> if Development `elem` flags then getJS else getMinJS
+    distDir </> "ishallopentoday" <.> "js" %> if Production `elem` flags then getMinJS else getJS
     distDir </> index %> getHtml
 
 {-|
