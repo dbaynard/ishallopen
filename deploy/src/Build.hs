@@ -31,33 +31,39 @@ newtype GhcjsVersion = GhcjsVersion ()
 newtype GhcjsFolder = GhcjsFolder ()
         deriving (Show, Eq, Hashable, Binary, NFData, Typeable)
 
-data Flag = Develop
-    deriving (Eq)
+data Flag = Development
+    deriving (Eq, Ord, Show, Read, Enum, Bounded)
 
 cmdFlags :: [OptDescr (Either String Flag)]
-cmdFlags = [Option "D" ["develop"] (NoArg . Right $ Develop) "Develop mode — do not compile javascript"]
+cmdFlags = [Option "D" ["development"] (NoArg . Right $ Development) "Development mode — do not compile javascript"]
 
 build :: IO ()
 build = shakeArgsWith shakeOptions{shakeFiles=shakeDir} cmdFlags $ \flags targets -> pure . pure $ do
     want $ [ ishallopentodayHtml 
+           , outputJS
            , distDir </> "ishallopentoday" <.> "js"
-           , distDir </> "index" <.> "html"
+           , distDir </> index
            ] <> targets
-    void $ addOracle getGhcVersion
-    void $ addOracle getGhcjsVersion
-    void $ addOracle getGhcjsFolder
+    action $
+        when (Development `notElem` flags) $ need [outputMinJS]
+    addOracle' getGhcVersion
+    addOracle' getGhcjsVersion
+    addOracle' getGhcjsFolder
     "clean" ~> clean
     ishallopentodayHtml %> getGen
     outputJS %> genJS
-    distDir </> "ishallopentoday" <.> "js" %> if Develop `elem` flags then getJS else getMinJS
-    "index" <.> "html" %> genHtml
-    distDir </> "index" <.> "html" %> getHtml
+    outputMinJS %> genMinJS
+    distDir </> "ishallopentoday" <.> "js" %> if Development `elem` flags then getJS else getMinJS
+    distDir </> index %> getHtml
+
+addOracle' :: (ShakeValue q, ShakeValue a) => (q -> Action a) -> Rules ()
+addOracle' = void . addOracle
 
 clean :: Action ()
 clean = do
         putNormal $ "Removing files in " <> ", " `intercalate` [shakeDir, buildDir] <> "and removing " <> ishallopentodayHtml
         removeFilesAfter buildDir ["//*"]
-        removeFilesAfter "." [ishallopentodayHtml, "index.html"]
+        removeFilesAfter "." [ishallopentodayHtml]
         removeFilesAfter shakeDir ["//*"]
 
 genJS :: FilePath -> Action ()
@@ -77,27 +83,27 @@ genJS out = do
 
 getJS :: FilePath -> Action ()
 getJS out = do
+        alwaysRerun
         need [outputJS]
-        outputJS `copyFileChanged` out
+        outputJS `copyFile'` out
+
+genMinJS :: FilePath -> Action ()
+genMinJS out = do
+        need [outputJS]
+        Stdout minOut <- command [] "closure" ["--compilation_level=ADVANCED_OPTIMIZATIONS", outputJS] :: Action (Stdout ByteString)
+        liftIO . B.writeFile out $ minOut
 
 getMinJS :: FilePath -> Action ()
 getMinJS out = do
-        need [outputJS]
-        Stdout minOut <- command [] "closure" ["--compilation_level=ADVANCED_OPTIMIZATIONS", outputJS] :: Action (Stdout ByteString)
-        liftIO . B.writeFile outputMinJS $ minOut
+        alwaysRerun
         need [outputMinJS]
-        outputMinJS `copyFileChanged` out
-
-genHtml :: String -> Action ()
-genHtml _ = do
-        need [ishallopentodayHtml]
-        command_ [] "./ishallopentoday-html" []
+        outputMinJS `copyFile'` out
 
 getHtml :: String -> Action ()
 getHtml out = do
-        need [index]
-        index `copyFileChanged` out
-        removeFilesAfter index []
+        need [ishallopentodayHtml]
+        Stdout html <- command [] "./ishallopentoday-html" []
+        liftIO . B.writeFile out $ html
 
 getGen :: String -> Action ()
 getGen out = do
@@ -130,7 +136,7 @@ localInstallRoot :: Action FilePath
 localInstallRoot = trim . fromStdout <$> command [] "stack" ["path", "--local-install-root"]
 
 shakeDir, distDir, buildDir, outputName, outputJS, outputMinJS, cstackyaml, index, ishallopentodayHtml :: FilePath
-shakeDir = "_build"
+shakeDir = ".build"
 buildDir = "dist-js"
 distDir = "dist"
 outputName = "client"

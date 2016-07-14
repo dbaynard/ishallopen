@@ -3,6 +3,7 @@
 module Main where
 
 import IsHallOpenToday.Html
+import qualified Data.ByteString as B
 
 main :: IO ()
-main = renderIndex "ishallopenApp"
+main = B.putStr . renderIndex $ "ishallopenApp"
