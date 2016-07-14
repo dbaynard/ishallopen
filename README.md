@@ -1,4 +1,5 @@
 # ishallopentoday
+
 Is hall open today?
 
 ## Set-up
@@ -6,6 +7,8 @@ Is hall open today?
 Install [stack](https://haskellstack.org), clone this repo then from the main folder, run
 
     /usr/share/git/workdir/git-new-workdir . dist gh-pages
+
+Install [closure compiler](https://developers.google.com/closure/compiler/).
 
 ## Deployment
 
