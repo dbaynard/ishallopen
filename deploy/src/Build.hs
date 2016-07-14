@@ -106,10 +106,11 @@ clean = do
         removeFilesAfter shakeDir ["//*"]
 
 {-|
-  Produce the `client.js` file.
+  Produce the `client.js` file. Track the whole client directory.
 -}
 genJS :: FilePath -> Action ()
 genJS out = do
+        need =<< getDirectoryFiles "" [outputName <//> "*.hs", outputName <//> "*.cabal"]
         ghcjs <- askOracle (GhcjsVersion ())
         command_ [] "stack" ["build", "--compiler", ghcjs, "ishallopentoday-client"]
         lir <- localInstallRoot
@@ -164,6 +165,7 @@ getHtml out = do
 -}
 getGen :: String -> Action ()
 getGen out = do
+        need =<< getDirectoryFiles "" ["html" <//> "*.hs", "html" <//> "*.cabal"]
         command_ [] "stack" ["build", out]
         lir <- localInstallRoot
         let htmlexe = lir </> "bin" </> ishallopentodayHtml 
@@ -217,4 +219,3 @@ outputMinJS = buildDir </> outputName <.> "min" <.> "js"
 cstackyaml = outputName </> "stack" <.> "yaml"
 index = "index" <.> "html"
 ishallopentodayHtml = "ishallopentoday-html" <.> exe
-
