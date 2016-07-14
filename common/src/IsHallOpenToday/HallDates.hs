@@ -5,6 +5,7 @@
 
 module IsHallOpenToday.HallDates (
     module IsHallOpenToday.HallDates
+  , Day
 )   where
 
 import BasicPrelude
@@ -23,6 +24,9 @@ instance MonadTime IO where
 
 instance MonadTime Identity where
     getTime = pure $ read "2016-06-24 04:40:00 GMT"
+
+defaultDay :: Day
+defaultDay = read "2016-06-24"
 
 data Message = Checking
              | NoHallToday
@@ -52,10 +56,10 @@ interpret NoHallForAges  = "Hall is closed until August 31st."
 interpret MaybeHall      = "Who knows. Better get on your bike."
 
 ishallopen :: MonadTime m => m Message
-ishallopen = do
-        currentTime <- getTime
-        let today = currentTime ^. _utctDay 
-        pure $ ishallopentoday today
+ishallopen = ishallopentoday <$> getToday
+
+getToday :: MonadTime m => m Day
+getToday = view _utctDay <$> getTime
 
 ishallopentoday :: Day -> Message
 ishallopentoday (subtract 57564 . view modifiedJulianDay -> day)
