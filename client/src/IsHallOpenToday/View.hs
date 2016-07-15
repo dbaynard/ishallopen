@@ -20,6 +20,6 @@ ishallopenApp = defineControllerView "Is hall open today?" messageStore $ \(Stor
         p_ [ classNames [("message",True)]] . elemText . interpret $ msg
         p_ [ classNames [("date",True)]] . elemJSString $ date
         p_ [
-             classNames [("refresh",True)]
+             classNames [("refresh",True),("js-only",True)]
            , onClick $ \_ _ -> dispatch Delay
            ] "Refresh"
