@@ -29,6 +29,8 @@ html ghcjsStatic ghcjsID = doctypehtml_ $ do
             script_ [ src_ "https://cdnjs.cloudflare.com/ajax/libs/react/15.2.0/react.min.js" ] mempty
             script_ [ src_ "https://cdnjs.cloudflare.com/ajax/libs/react/15.2.0/react-dom.min.js" ] mempty
             script_ [ src_ "ishallopentoday.js" ] mempty
+            noscript_ [] $
+                p_ [ class_ "warning"] "This site requires javascript. It does some calculations to work out whether hall is open, and that needs javascript. So turn on javascript."
             p_ $
                 a_ [  class_ "refresh", href_ "//github.com/dbaynard/ishallopen/issues" ] "Issue tracker"
     where mempty = "" :: ByteString
