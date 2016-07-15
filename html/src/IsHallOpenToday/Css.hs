@@ -3,6 +3,7 @@
 
 module IsHallOpenToday.Css (
     css
+  , noScriptCss
   , renderStrict
 )   where
 
@@ -12,6 +13,9 @@ import Data.String.Conv
 
 renderStrict :: Css -> Text
 renderStrict = toS . render
+
+noScriptCss :: Css
+noScriptCss = ".js-only" ? display none
 
 css :: Css
 css = -- do
@@ -24,6 +28,10 @@ css = -- do
                 fontFamily ["Helvetica Neue", "Helvetica", "Arial"] [sansSerif]
                 ".message" & do
                     fontSize $ pt 32
+                ".warning" & do
+                    fontSize $ pt 20
+                    margin nil auto nil auto
+                    padding (ex 1) (em 1) (ex 1) (em 1)
             (p <> a) # ".refresh" ? do
                 margin nil auto nil auto
                 fontSize $ pt 10

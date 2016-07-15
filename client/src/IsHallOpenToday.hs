@@ -20,5 +20,7 @@ react :: String -> IO ()
 react text = reactRender text ishallopenApp () <* executeAction (dispatchMessage NoDelay)
 
 reactStat :: IO ()
-reactStat = putStrLn =<< reactRenderToString False ishallopenApp ()
+reactStat = do
+        executeAction (dispatchMessage NoDelay)
+        putStrLn =<< reactRenderToString False ishallopenApp ()
 
