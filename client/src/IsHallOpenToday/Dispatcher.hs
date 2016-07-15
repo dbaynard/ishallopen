@@ -8,8 +8,8 @@ import React.Flux
 
 import IsHallOpenToday.Store
 
-dispatch :: ViewEventHandler
-dispatch = [dispatchMessage]
+dispatch :: Delay -> ViewEventHandler
+dispatch delay = [dispatchMessage delay]
 
-dispatchMessage :: SomeStoreAction
-dispatchMessage = SomeStoreAction messageStore ()
+dispatchMessage :: Delay -> SomeStoreAction
+dispatchMessage = SomeStoreAction messageStore
