@@ -6,4 +6,6 @@ import IsHallOpenToday.Html
 import qualified Data.ByteString as B
 
 main :: IO ()
-main = B.putStr . renderIndex $ "ishallopenApp"
+main = do
+        staticHtml <- B.getContents
+        B.putStr . renderIndex staticHtml $ "ishallopenApp"
