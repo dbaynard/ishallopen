@@ -15,10 +15,11 @@ import IsHallOpenToday.Dispatcher
 import IsHallOpenToday.Common
 
 ishallopenApp :: ReactView ()
-ishallopenApp = defineControllerView "Is hall open today?" messageStore $ \msg () ->
+ishallopenApp = defineControllerView "Is hall open today?" messageStore $ \(Store (msg, date)) () ->
     div_ $ do
         p_ [ classNames [("message",True)]] . elemText . interpret $ msg
+        p_ [ classNames [("date",True)]] . elemJSString $ date
         p_ [
              classNames [("refresh",True)]
-           , onClick $ \_ _ -> dispatch
+           , onClick $ \_ _ -> dispatch Delay
            ] "Refresh"
