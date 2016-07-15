@@ -3,6 +3,7 @@
 
 module IsHallOpenToday (
     react
+  , reactStat
 )   where
 
 import BasicPrelude
@@ -17,4 +18,7 @@ import IsHallOpenToday.Store
 
 react :: String -> IO ()
 react text = reactRender text ishallopenApp () <* executeAction (dispatchMessage NoDelay)
+
+reactStat :: IO ()
+reactStat = putStrLn =<< reactRenderToString False ishallopenApp ()
 

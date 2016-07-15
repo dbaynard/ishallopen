@@ -39,6 +39,15 @@ executable ishallopentoday-client
                      , ishallopentoday-client
   default-language:    Haskell2010
 
+executable ishallopentoday-node
+  hs-source-dirs:      node
+  main-is:             Main.hs
+  ghc-options:         -Wall
+  build-depends:       base
+                     , ghcjs-base
+                     , ishallopentoday-client
+  default-language:    Haskell2010
+
 test-suite client-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test

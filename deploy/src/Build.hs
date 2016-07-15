@@ -86,6 +86,9 @@ build = shakeArgsWith shakeOptions{shakeFiles=shakeDir} cmdFlags $ \flags target
     ishallopentodayHtml %> getGen
     outputJS %> genJS
     outputMinJS %> genMinJS
+    packageJSON react %> npmLink
+    packageJSON reactDom %> npmLink
+    outputNode %> genNodeJS
     distDir </> "ishallopentoday" <.> "js" %> if Production `elem` flags then getMinJS else getJS
     distDir </> index %> getHtml
 
@@ -103,9 +106,9 @@ addOracle' = void . addOracle
 clean :: Action ()
 clean = do
         putNormal $ "Removing files in " <> ", " `intercalate` [shakeDir, buildDir] <> "and removing " <> ishallopentodayHtml
-        removeFilesAfter buildDir ["//*"]
+        removeFilesAfter buildDir ["//"]
         removeFilesAfter "." [ishallopentodayHtml]
-        removeFilesAfter shakeDir ["//*"]
+        removeFilesAfter shakeDir ["//"]
 
 {-|
   Produce the `client.js` file. Track the whole client directory.
@@ -125,6 +128,20 @@ genJS out = do
             B.writeFile out $ "(function(global,React,ReactDOM) {" <> alljs <> "})(window, window['React'], window['ReactDOM']);"
         command_ [] "sed" ["-i", "s/goog.provide.*//", out]
         command_ [] "sed" ["-i", "s/goog.require.*//", out]
+
+{-|
+  Produce the `client.node.js` file. Track the whole client directory.
+-}
+genNodeJS :: FilePath -> Action ()
+genNodeJS out = do
+        need [outputJS, packageJSON react, packageJSON reactDom]
+        lir <- localInstallRoot
+        ghcjsFolder <- askOracle (GhcjsFolder ())
+        let nodejs = lir </> ghcjsFolder </> "bin" </> "ishallopentoday-node.jsexe" </> "all.js"
+        need [nodejs]
+        writeFile' out $ "React = require(\"react\");\n"
+                      <> "ReactDOMServer = require(\"react-dom/server\");\n"
+                      <> "require(\"" <> nodejs <> "\");"
 
 {-|
   Copy the `client.js` file to the distribution (gh-pages) directory.
@@ -158,8 +175,9 @@ getMinJS out = do
 -}
 getHtml :: String -> Action ()
 getHtml out = do
-        need [ishallopentodayHtml]
-        Stdout html <- command [] "./ishallopentoday-html" []
+        need [ishallopentodayHtml, outputNode]
+        Stdout reactHtml <- command [] "node" [outputNode]
+        Stdout html <- command [StdinBS reactHtml] "./ishallopentoday-html" []
         liftIO . B.writeFile out $ html
 
 {-|
@@ -202,6 +220,9 @@ getGhcjsFolder (GhcjsFolder _) = do
         parseGhcjs = (<>) <$> string "ghcjs-" <*> fmap (intersperse '.') (digit `endBy1` char '.') <* count 8 digit
         digit = choice . fmap char $ "0123456789"
 
+npmLink :: FilePath -> Action ()
+npmLink out = command_ [Cwd (takeDirectory1 out)] "npm" ["link", (!! 1) . reverse . splitDirectories $ out]
+
 {-|
   Call `stack` to find where programs are (locally) installed.
 -}
@@ -211,13 +232,19 @@ localInstallRoot = trim . fromStdout <$> command [] "stack" ["path", "--local-in
 {-|
   Settings; the names should be relatively clear.
 -}
-shakeDir, distDir, buildDir, outputName, outputJS, outputMinJS, cstackyaml, index, ishallopentodayHtml :: FilePath
+shakeDir, distDir, buildDir, outputName, react, reactDom, outputJS, outputMinJS, outputNode, cstackyaml, index, ishallopentodayHtml :: FilePath
 shakeDir = ".build"
 buildDir = "dist-js"
 distDir = "dist"
 outputName = "client"
+react = buildDir </> "node_modules" </> "react"
+reactDom = buildDir </> "node_modules" </> "react-dom"
 outputJS = buildDir </> outputName <.> "js"
 outputMinJS = buildDir </> outputName <.> "min" <.> "js"
+outputNode = buildDir </> outputName <.> "node" <.> "js"
 cstackyaml = outputName </> "stack" <.> "yaml"
 index = "index" <.> "html"
 ishallopentodayHtml = "ishallopentoday-html" <.> exe
+
+packageJSON :: FilePath -> FilePath
+packageJSON = (</> "package" <.> "json")
