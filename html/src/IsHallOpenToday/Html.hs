@@ -22,10 +22,10 @@ html :: Monad m => ByteString -> Text -> HtmlT m ()
 html ghcjsStatic ghcjsID = doctypehtml_ $ do
         head_ $ do
             meta_ [ charset_ "utf-8" ]
-            meta_ [ property_ "og:image", content_ "hall-today.png" ]
+            meta_ [ property_ "og:image", content_ "https://dbaynard.github.io/ishallopen/hall-today.png" ]
             meta_ [ property_ "og:image:type", content_ "image/png" ]
             meta_ [ property_ "og:image:width", content_ "1382" ]
-            meta_ [ property_ "og:image:height", content_ "920" ]
+            meta_ [ property_ "og:image:height", content_ "727" ]
             meta_ [ property_ "og:url", content_ "https://dbaynard.github.io/ishallopen" ]
             meta_ [ property_ "og:title", content_ "Is hall open today?" ]
             metaDescription "Emma hall is sometimes open, sometimes not. What is it doing today?"
