@@ -71,6 +71,7 @@ build = shakeArgsWith shakeOptions{shakeFiles=shakeDir} cmdFlags $ \flags target
            , outputJS
            , distDir </> "ishallopentoday" <.> "js"
            , distDir </> index
+           , distDir </> previewImage
            ] <> targets -- Adds `clean` target
     -- | Only want outputMinJS if not in development mode.
     action $
@@ -91,6 +92,7 @@ build = shakeArgsWith shakeOptions{shakeFiles=shakeDir} cmdFlags $ \flags target
     outputNode %> genNodeJS
     distDir </> "ishallopentoday" <.> "js" %> if Production `elem` flags then getMinJS else getJS
     distDir </> index %> getHtml
+    distDir </> previewImage %> getPreviewImage
 
 {-|
   This helper function ignores the return value for 'addOracle'.
@@ -170,12 +172,18 @@ getMinJS out = do
         need [outputMinJS]
         outputMinJS `copyFile'` out
 
+getPreviewImage :: FilePath -> Action ()
+getPreviewImage out = do
+        alwaysRerun
+        need [staticDir </> previewImage]
+        ( staticDir </> previewImage ) `copyFileChanged` out
+
 {-|
   Produce the `index.html` file in the distribution directory.
 -}
 getHtml :: String -> Action ()
 getHtml out = do
-        need [ishallopentodayHtml, outputNode]
+        need [ishallopentodayHtml, outputNode, distDir </> previewImage]
         Stdout reactHtml <- command [] "node" [outputNode]
         Stdout html <- command [StdinBS reactHtml] "./ishallopentoday-html" []
         liftIO . B.writeFile out $ html
@@ -232,10 +240,11 @@ localInstallRoot = trim . fromStdout <$> command [] "stack" ["path", "--local-in
 {-|
   Settings; the names should be relatively clear.
 -}
-shakeDir, distDir, buildDir, outputName, react, reactDom, outputJS, outputMinJS, outputNode, cstackyaml, index, ishallopentodayHtml :: FilePath
+shakeDir, distDir, buildDir, staticDir, outputName, react, reactDom, outputJS, outputMinJS, outputNode, cstackyaml, index, ishallopentodayHtml, previewImage :: FilePath
 shakeDir = ".build"
 buildDir = "dist-js"
 distDir = "dist"
+staticDir = "static"
 outputName = "client"
 react = buildDir </> "node_modules" </> "react"
 reactDom = buildDir </> "node_modules" </> "react-dom"
@@ -245,6 +254,7 @@ outputNode = buildDir </> outputName <.> "node" <.> "js"
 cstackyaml = outputName </> "stack" <.> "yaml"
 index = "index" <.> "html"
 ishallopentodayHtml = "ishallopentoday-html" <.> exe
+previewImage = "hall-today" <.> "png"
 
 packageJSON :: FilePath -> FilePath
 packageJSON = (</> "package" <.> "json")
