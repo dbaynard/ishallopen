@@ -52,7 +52,7 @@ interpret BandLToday     = "Hall is serving breakfast and lunch today."
 interpret BrunchToday    = "Hall is serving brunch today."
 interpret DinnerToday    = "Hall is serving dinner today, 17:45 to 18:30."
 interpret MCRDinnerToday = "Hall is serving breakfast and lunch today. And there’s an MCR dinner tonight!"
-interpret NoHallForAges  = "Hall is closed until August 31st."
+interpret NoHallForAges  = "Hall is closed until September 1st."
 interpret MaybeHall      = "Who knows. Better get on your bike."
 
 ishallopen :: MonadTime m => m Message
@@ -65,10 +65,10 @@ ishallopentoday :: Day -> Message
 ishallopentoday (subtract 57564 . view modifiedJulianDay -> day)
     | day == 17             = MCRDinnerToday
     | day >= 96 || day < 0  = MaybeHall
-    | day < 48 || day >= 67 = 
+    | day < 48 || day >= 68 =
         case day `mod` 7 of
             0 -> NoHallToday
             1 -> DinnerToday
             _ -> BandLToday
-    | day >= 48 && day < 68 = NoHallForAges
+    | day >= 48 && day < 69 = NoHallForAges
     | otherwise             = MaybeHall
