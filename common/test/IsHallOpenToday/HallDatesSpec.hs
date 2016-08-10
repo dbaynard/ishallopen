@@ -27,7 +27,7 @@ main = hspec spec
 spec :: Spec
 spec =
     describe "Hall open status" $ do
-        it "is closed between August 12th and 30th inclusive" $
+        it "is closed between August 12th and 31st inclusive" $
             property $ \(x :: ClosedDates) -> (ishallopentoday . coerce) x === NoHallForAges
         it "is closed on other Saturdays before 29th September" $
             property $ \(x :: SummerDates) -> (dayOfWeek . coerce) x == 6 ==> (ishallopentoday . coerce) x === NoHallToday
@@ -46,11 +46,11 @@ newtype SummerDates = SummerDates Day
     deriving (Show)
 
 instance Arbitrary ClosedDates where
-   arbitrary = "2016-08-12" `dateRange` "2016-08-30"
+   arbitrary = "2016-08-12" `dateRange` "2016-08-31"
 instance Arbitrary SummerDates where
    arbitrary = oneof [
                        "2016-06-25" `dateRange` "2016-08-11"
-                     , "2016-08-31" `dateRange` "2016-09-28"
+                     , "2016-09-01" `dateRange` "2016-09-28"
                      ]
 
 dayOfWeek :: Day -> DayOfWeek
