@@ -3,9 +3,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE LambdaCase #-}
 
-module HallDatesSpec (
-    module HallDatesSpec
-)   where
+module IsHallOpenToday.HallDatesSpec (main, spec) where
 
 import Test.Hspec
 import Test.QuickCheck
