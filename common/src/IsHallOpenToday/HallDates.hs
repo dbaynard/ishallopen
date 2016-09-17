@@ -63,12 +63,14 @@ getToday = view _utctDay <$> getTime
 
 ishallopentoday :: Day -> Message
 ishallopentoday (subtract 57564 . view modifiedJulianDay -> day)
-    | day == 17             = MCRDinnerToday
-    | day >= 96 || day < 0  = MaybeHall
-    | day < 48 || day >= 68 =
-        case day `mod` 7 of
-            0 -> NoHallToday
-            1 -> DinnerToday
-            _ -> BandLToday
-    | day >= 48 && day < 69 = NoHallForAges
-    | otherwise             = MaybeHall
+        | day == 17             = MCRDinnerToday
+        | day >= 96 || day < 0  = MaybeHall
+        | day < 48 = ofWeek day NoHallToday DinnerToday BandLToday
+        | day >= 68 =ofWeek day NoHallToday NoHallToday BandLToday
+        | day >= 48 && day < 69 = NoHallForAges
+        | otherwise             = MaybeHall
+    where
+        ofWeek d a b c = case d `mod` 7 of
+            0 -> a
+            1 -> b
+            _ -> c

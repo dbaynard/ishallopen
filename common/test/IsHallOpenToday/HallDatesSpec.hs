@@ -31,8 +31,10 @@ spec =
             property $ \(x :: ClosedDates) -> (ishallopentoday . coerce) x === NoHallForAges
         it "is closed on other Saturdays before 29th September" $
             property $ \(x :: SummerDates) -> (dayOfWeek . coerce) x == 6 ==> (ishallopentoday . coerce) x === NoHallToday
-        it "is open for dinner on other Sundays before 29th September" $
-            property $ \(x :: SummerDates) -> (dayOfWeek . coerce) x == 7 ==> (ishallopentoday . coerce) x === DinnerToday
+        it "is open for dinner on other Sundays before 12th August" $
+            property $ \(x :: PreSummerDates) -> (dayOfWeek . coerce) x == 7 ==> (ishallopentoday . coerce) x === DinnerToday
+        it "is closed for on other Sundays before 29th September" $
+            property $ \(x :: PostSummerDates) -> (dayOfWeek . coerce) x == 7 ==> (ishallopentoday . coerce) x === NoHallToday
         it "reads MCR dinner when there are MCR dinners" $
             ishallopentoday (read "2016-07-12") === MCRDinnerToday
         it "is open for breakfast and lunch on other weekdays before 29th September" $
@@ -44,9 +46,17 @@ newtype ClosedDates = ClosedDates Day
     deriving (Show)
 newtype SummerDates = SummerDates Day 
     deriving (Show)
+newtype PreSummerDates = PreSummerDates Day 
+    deriving (Show)
+newtype PostSummerDates = PostSummerDates Day
+    deriving (Show)
 
 instance Arbitrary ClosedDates where
    arbitrary = "2016-08-12" `dateRange` "2016-08-31"
+instance Arbitrary PreSummerDates where
+   arbitrary = "2016-06-25" `dateRange` "2016-08-11"
+instance Arbitrary PostSummerDates where
+   arbitrary = "2016-09-01" `dateRange` "2016-09-28"
 instance Arbitrary SummerDates where
    arbitrary = oneof [
                        "2016-06-25" `dateRange` "2016-08-11"
