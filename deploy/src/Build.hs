@@ -23,7 +23,6 @@ module Build (
 import BasicPrelude
 import Data.Yaml
 import qualified Data.ByteString as B
-import Text.ParserCombinators.ReadP
 import Data.List.Extra (trim)
 
 import System.Console.GetOpt
@@ -38,9 +37,6 @@ newtype GhcVersion = GhcVersion ()
         deriving (Show, Eq, Hashable, Binary, NFData, Typeable)
 
 newtype GhcjsVersion = GhcjsVersion ()
-        deriving (Show, Eq, Hashable, Binary, NFData, Typeable)
-
-newtype GhcjsFolder = GhcjsFolder ()
         deriving (Show, Eq, Hashable, Binary, NFData, Typeable)
 
 data Flag = Production
@@ -80,7 +76,6 @@ build = shakeArgsWith shakeOptions{shakeFiles=shakeDir} cmdFlags $ \flags target
     -- structure
     addOracle' getGhcVersion
     addOracle' getGhcjsVersion
-    addOracle' getGhcjsFolder
     -- | Clear up
     "clean" ~> clean
     -- | The heavy lifting
@@ -120,9 +115,8 @@ genJS out = do
         need =<< getDirectoryFiles "" [outputName <//> "*.hs", outputName <//> "*.cabal", "common" <//> "*.hs", "common" <//> "*.cabal"]
         ghcjs <- askOracle (GhcjsVersion ())
         command_ [] "stack" ["build", "--compiler", ghcjs, "ishallopentoday-client"]
-        lir <- localInstallRoot
-        ghcjsFolder <- askOracle (GhcjsFolder ())
-        let clientjs = lir </> ghcjsFolder </> "bin" </> "ishallopentoday-client.jsexe" </> "all.js"
+        lir <- localInstallRoot (Just ghcjs)
+        let clientjs = lir </> "bin" </> "ishallopentoday-client.jsexe" </> "all.js"
         putNormal "clientjs"
         need [clientjs]
         liftIO $ do
@@ -137,9 +131,9 @@ genJS out = do
 genNodeJS :: FilePath -> Action ()
 genNodeJS out = do
         need [outputJS, packageJSON react, packageJSON reactDom]
-        lir <- localInstallRoot
-        ghcjsFolder <- askOracle (GhcjsFolder ())
-        let nodejs = lir </> ghcjsFolder </> "bin" </> "ishallopentoday-node.jsexe" </> "all.js"
+        ghcjs <- askOracle (GhcjsVersion ())
+        lir <- localInstallRoot (Just ghcjs)
+        let nodejs = lir </> "bin" </> "ishallopentoday-node.jsexe" </> "all.js"
         need [nodejs]
         writeFile' out $ "React = require(\"react\");\n"
                       <> "ReactDOMServer = require(\"react-dom/server\");\n"
@@ -195,7 +189,7 @@ getGen :: String -> Action ()
 getGen out = do
         need =<< getDirectoryFiles "" ["html" <//> "*.hs", "html" <//> "*.cabal"]
         command_ [] "stack" ["build", out]
-        lir <- localInstallRoot
+        lir <- localInstallRoot Nothing
         let htmlexe = lir </> "bin" </> ishallopentodayHtml 
         need [htmlexe]
         htmlexe `copyFileChanged` out
@@ -216,26 +210,17 @@ getGhcjsVersion (GhcjsVersion _) = do
         Just ghcjs <- parseMonad (.: "compiler") yaml
         pure ghcjs
 
-{-|
-  Combine the GHC and GHCJS versions for the local stack ghcjs directory.
--}
-getGhcjsFolder :: GhcjsFolder -> Action String
-getGhcjsFolder (GhcjsFolder _) = do
-        ghcVer <- askOracle (GhcVersion ())
-        ghcjsVer <- head . fmap fst . readP_to_S parseGhcjs <$> askOracle (GhcjsVersion ())
-        pure $ ghcjsVer <> "_ghc-" <> ghcVer
-    where
-        parseGhcjs = (<>) <$> string "ghcjs-" <*> fmap (intersperse '.') (digit `endBy1` char '.') <* count 8 digit
-        digit = choice . fmap char $ "0123456789"
-
 npmLink :: FilePath -> Action ()
 npmLink out = command_ [Cwd (takeDirectory1 out)] "npm" ["link", (!! 1) . reverse . splitDirectories $ out]
 
 {-|
   Call `stack` to find where programs are (locally) installed.
 -}
-localInstallRoot :: Action FilePath
-localInstallRoot = trim . fromStdout <$> command [] "stack" ["path", "--local-install-root"]
+localInstallRoot :: Maybe String -> Action FilePath
+localInstallRoot = fmap (trim . fromStdout) . command [] "stack" . (["path", "--local-install-root"] <>) . specifiedCompiler
+    where
+        specifiedCompiler (Just path) = ["--compiler", path]
+        specifiedCompiler Nothing     = []
 
 {-|
   Settings; the names should be relatively clear.
