@@ -38,6 +38,7 @@ data Message = Checking
              | MCRDinnerToday
              | NoHallForAges
              | MaybeHall
+             | NormalDay
              deriving (Show, Eq, Ord, Read, Enum, Bounded, Generic)
 
 instance FromJSON Message
@@ -54,6 +55,7 @@ interpret DinnerToday    = "Hall is serving dinner today, 17:45 to 18:30."
 interpret MCRDinnerToday = "Hall is serving breakfast and lunch today. And there’s an MCR dinner tonight!"
 interpret NoHallForAges  = "Hall is closed until September 1st."
 interpret MaybeHall      = "Who knows. Better get on your bike."
+interpret NormalDay      = "Today is a normal day, and hall is serving it’s term schedule."
 
 ishallopen :: MonadTime m => m Message
 ishallopen = ishallopentoday <$> getToday
@@ -64,9 +66,11 @@ getToday = view _utctDay <$> getTime
 ishallopentoday :: Day -> Message
 ishallopentoday (subtract 57564 . view modifiedJulianDay -> day)
         | day == 17             = MCRDinnerToday
+        | day == 99             = BrunchToday
+        | day >= 97             = NormalDay
         | day >= 96 || day < 0  = MaybeHall
-        | day < 48 = ofWeek day NoHallToday DinnerToday BandLToday
-        | day >= 68 =ofWeek day NoHallToday NoHallToday BandLToday
+        | day < 48              = ofWeek day NoHallToday DinnerToday BandLToday
+        | day >= 68             = ofWeek day NoHallToday NoHallToday BandLToday
         | day >= 48 && day < 69 = NoHallForAges
         | otherwise             = MaybeHall
     where

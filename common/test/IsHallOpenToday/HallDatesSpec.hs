@@ -35,6 +35,8 @@ spec =
             property $ \(x :: PreSummerDates) -> (dayOfWeek . coerce) x == 7 ==> (ishallopentoday . coerce) x === DinnerToday
         it "is closed for on other Sundays before 29th September" $
             property $ \(x :: PostSummerDates) -> (dayOfWeek . coerce) x == 7 ==> (ishallopentoday . coerce) x === NoHallToday
+        it "is only serving brunch on 2016-10-02" $
+            ishallopentoday (read "2016-10-02") === BrunchToday
         it "reads MCR dinner when there are MCR dinners" $
             ishallopentoday (read "2016-07-12") === MCRDinnerToday
         it "is open for breakfast and lunch on other weekdays before 29th September" $
