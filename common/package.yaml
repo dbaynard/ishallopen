@@ -1,0 +1,52 @@
+name: ishallopentoday-common
+version: '0.1.0.0'
+synopsis: Initial project template from stack
+description: Please see README.md
+category: Web
+author: David Baynard
+maintainer: davidbaynard@gmail.com
+copyright: 2016 David Baynard
+license: BSD3
+github: dbaynard/ishallopentoday
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  exposed-modules:
+  - IsHallOpenToday.Common
+  - IsHallOpenToday.HallDates
+  - IsHallOpenToday.Lens
+  dependencies:
+  - base >=4.7 && <5
+  - aeson
+  - basic-prelude
+  - mtl
+  - profunctors
+  - thyme
+executables:
+  ishallopentoday-common:
+    main: Main.hs
+    source-dirs: app
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - ishallopentoday-common
+tests:
+  common-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - hspec
+    - ishallopentoday-common
+    - old-locale
+    - QuickCheck
+    - thyme

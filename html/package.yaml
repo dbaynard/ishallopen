@@ -1,0 +1,48 @@
+name: ishallopentoday-html
+version: '0.1.0.0'
+synopsis: Initial project template from stack
+description: Please see README.md
+category: Web
+author: David Baynard
+maintainer: davidbaynard@gmail.com
+copyright: 2016 David Baynard
+license: BSD3
+github: dbaynard/ishallopentoday
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  exposed-modules:
+  - IsHallOpenToday.Css
+  - IsHallOpenToday.Html
+  dependencies:
+  - base >=4.7 && <5
+  - basic-prelude
+  - clay
+  - ishallopentoday-common
+  - lucid
+  - string-conv
+executables:
+  ishallopentoday-html:
+    main: Main.hs
+    source-dirs: app
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - bytestring
+    - ishallopentoday-html
+tests:
+  html-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - ishallopentoday-html

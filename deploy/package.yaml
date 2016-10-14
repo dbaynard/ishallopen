@@ -1,0 +1,48 @@
+name: deploy
+version: '0.1.0.0'
+synopsis: Initial project template from stack
+description: Please see README.md
+category: Web
+author: David Baynard
+maintainer: davidbaynard@gmail.com
+copyright: 2016 David Baynard
+license: BSD3
+github: dbaynard/deploy
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  exposed-modules:
+  - Build
+  dependencies:
+  - base >=4.7 && <5
+  - basic-prelude
+  - bytestring
+  - extra
+  - shake
+  - yaml
+executables:
+  deploy-app:
+    main: Main.hs
+    source-dirs: app
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -with-rtsopts=-IO
+    dependencies:
+    - base
+    - deploy
+tests:
+  deploy-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - hspec
+    - deploy
