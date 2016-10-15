@@ -11,6 +11,9 @@ github: dbaynard/ishallopentoday
 library:
   source-dirs: src
   ghc-options: -Wall
+  when:
+  - condition: impl(ghcjs >= 0.2.1)
+    ghc-options: -dedupe
   exposed-modules:
   - IsHallOpenToday
   - IsHallOpenToday.Dispatcher
@@ -30,6 +33,9 @@ executables:
     main: Main.hs
     source-dirs: node
     ghc-options: -Wall
+    when:
+    - condition: impl(ghcjs >= 0.2.1)
+      ghc-options: -dedupe
     dependencies:
     - base
     - ghcjs-base
@@ -38,6 +44,9 @@ executables:
     main: Main.hs
     source-dirs: app
     ghc-options: -Wall
+    when:
+    - condition: impl(ghcjs >= 0.2.1)
+      ghc-options: -dedupe
     dependencies:
     - base
     - ghcjs-base
@@ -50,6 +59,7 @@ tests:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -dedupe
     dependencies:
     - base
     - hspec

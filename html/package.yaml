@@ -11,6 +11,9 @@ github: dbaynard/ishallopentoday
 library:
   source-dirs: src
   ghc-options: -Wall
+  when:
+  - condition: impl(ghcjs >= 0.2.1)
+    ghc-options: -dedupe
   exposed-modules:
   - IsHallOpenToday.Css
   - IsHallOpenToday.Html
@@ -30,6 +33,9 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    when:
+    - condition: impl(ghcjs >= 0.2.1)
+      ghc-options: -dedupe
     dependencies:
     - base
     - bytestring
@@ -43,6 +49,9 @@ tests:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    when:
+    - condition: impl(ghcjs >= 0.2.1)
+      ghc-options: -dedupe
     dependencies:
     - base
     - ishallopentoday-html

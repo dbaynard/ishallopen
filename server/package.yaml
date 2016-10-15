@@ -30,6 +30,9 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    when:
+    - condition: impl(ghcjs >= 0.2.1)
+      ghc-options: -dedupe
     dependencies:
     - base
     - ishallopentoday-server
@@ -41,6 +44,9 @@ tests:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    when:
+    - condition: impl(ghcjs >= 0.2.1)
+      ghc-options: -dedupe
     dependencies:
     - base
     - hspec

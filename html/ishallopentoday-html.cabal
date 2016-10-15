@@ -37,6 +37,8 @@ library
     , ishallopentoday-common
     , lucid
     , string-conv
+  if impl(ghcjs >= 0.2.1)
+    ghc-options: -dedupe
   default-language: Haskell2010
 
 executable ishallopentoday-html
@@ -48,6 +50,8 @@ executable ishallopentoday-html
       base
     , bytestring
     , ishallopentoday-html
+  if impl(ghcjs >= 0.2.1)
+    ghc-options: -dedupe
   default-language: Haskell2010
 
 test-suite html-test
@@ -58,5 +62,7 @@ test-suite html-test
   build-depends:
       base
     , ishallopentoday-html
+  if impl(ghcjs >= 0.2.1)
+    ghc-options: -dedupe
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   default-language: Haskell2010
