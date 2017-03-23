@@ -27,20 +27,14 @@ main = hspec spec
 spec :: Spec
 spec =
     describe "Hall open status" $ do
-        it "is closed between August 12th and 31st inclusive" $
+        it "is closed between April 8th and 18th inclusive" $
             property $ \(x :: ClosedDates) -> (ishallopentoday . coerce) x === NoHallForAges
-        it "is closed on other Saturdays before 29th September" $
-            property $ \(x :: SummerDates) -> (dayOfWeek . coerce) x == 6 ==> (ishallopentoday . coerce) x === NoHallToday
-        it "is open for dinner on other Sundays before 12th August" $
-            property $ \(x :: PreSummerDates) -> (dayOfWeek . coerce) x == 7 ==> (ishallopentoday . coerce) x === DinnerToday
-        it "is closed for on other Sundays before 29th September" $
-            property $ \(x :: PostSummerDates) -> (dayOfWeek . coerce) x == 7 ==> (ishallopentoday . coerce) x === NoHallToday
-        it "is only serving brunch on 2016-10-02" $
-            ishallopentoday (read "2016-10-02") === BrunchToday
-        it "reads MCR dinner when there are MCR dinners" $
-            ishallopentoday (read "2016-07-12") === MCRDinnerToday
-        it "is open for breakfast and lunch on other weekdays before 29th September" $
-            property $ \(x :: SummerDates) ->
+        it "is open for breakfast and lunch on other weekdays" $
+            property $ \(x :: PreSummerDates) ->
+                    (\z@(dayOfWeek . coerce -> y) -> coerce z /= (read "2016-07-12" :: Day) && y >= 1 && y <= 5) x
+                    ==> (ishallopentoday . coerce) x === BandLToday
+        it "is open for breakfast and lunch on other weekdays" $
+            property $ \(x :: PostSummerDates) ->
                     (\z@(dayOfWeek . coerce -> y) -> coerce z /= (read "2016-07-12" :: Day) && y >= 1 && y <= 5) x
                     ==> (ishallopentoday . coerce) x === BandLToday
 
@@ -54,16 +48,11 @@ newtype PostSummerDates = PostSummerDates Day
     deriving (Show)
 
 instance Arbitrary ClosedDates where
-   arbitrary = "2016-08-12" `dateRange` "2016-08-31"
+   arbitrary = "2017-04-08" `dateRange` "2017-04-18"
 instance Arbitrary PreSummerDates where
-   arbitrary = "2016-06-25" `dateRange` "2016-08-11"
+   arbitrary = "2017-03-23" `dateRange` "2017-04-07"
 instance Arbitrary PostSummerDates where
-   arbitrary = "2016-09-01" `dateRange` "2016-09-28"
-instance Arbitrary SummerDates where
-   arbitrary = oneof [
-                       "2016-06-25" `dateRange` "2016-08-11"
-                     , "2016-09-01" `dateRange` "2016-09-28"
-                     ]
+   arbitrary = "2017-04-19" `dateRange` "2017-04-30"
 
 dayOfWeek :: Day -> DayOfWeek
 dayOfWeek = view (weekDate . _wdDay)
