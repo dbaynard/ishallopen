@@ -141,7 +141,7 @@ getJS out = do
 genMinJS :: FilePath -> Action ()
 genMinJS out = do
         need [outputJS]
-        Stdout minOut <- command [] "closure" ["--compilation_level=ADVANCED_OPTIMIZATIONS", outputJS] :: Action (Stdout ByteString)
+        Stdout minOut <- command [] "closure-compiler" ["--compilation_level=ADVANCED_OPTIMIZATIONS", outputJS] :: Action (Stdout ByteString)
         liftIO . B.writeFile out $ minOut
 
 {-|
